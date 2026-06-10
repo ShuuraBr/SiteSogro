@@ -1,0 +1,30 @@
+/* ── Tokens da Identidade Visual ────────────────────────────── */
+:root {
+  /* Site institucional — navy */
+  --navy:       #0A1428;
+  --navy2:      #0f1e3c;
+  --gold:       #B7934A;
+  --gold2:      #D4AA6A;
+  --gold3:      #8a6a2a;
+  --silver:     #C3C8D0;
+  --off:        #F5F1E8;
+  --gray:       #78838F;
+
+  /* Portal do cliente — tons da imagem de referência */
+  --portal-bg:     #1C1710;  /* grafite quente — parede do escritório */
+  --portal-bg2:    #252015;  /* surface cards */
+  --portal-bg3:    #2E2819;  /* hover / borda */
+  --portal-beige:  #C8A87A;  /* bege quente — mármore */
+  --portal-beige2: #E8D5B0;  /* bege claro */
+  --portal-wood:   #5D4933;  /* madeira da estante */
+  --portal-text:   #F0E8D8;  /* texto principal */
+  --portal-text2:  #A89878;  /* texto secundário */
+  --portal-border: rgba(183,147,74,0.18);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { font-family: 'Inter', 'Segoe UI', sans-serif; }
+
+/* Fontes */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Monomakh&display=swap');

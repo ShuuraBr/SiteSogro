@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Portal Administrativo | C. Carvalho</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#0a1628;--silver:#b8c4cc;--silver-light:#d8e2e8;--gold:#b5924c;--gold-soft:#c9a96e;--gold-dim:rgba(181,146,76,0.12);--graphite:#181d2a;--graphite-mid:#1f2535;--graphite-soft:#28303f;--graphite-card:#2c3548;--graphite-hover:#323d52;--success-bg:rgba(26,122,74,0.12);--success-tx:#2ecc71;--danger-bg:rgba(176,48,48,0.12);--danger-tx:#e05555;--warn-bg:rgba(181,146,76,0.12);--warn-tx:var(--gold)}
+[data-theme="dark"]{--bg:var(--graphite);--bg-s:var(--graphite-mid);--bg-card:var(--graphite-card);--bg-sub:var(--graphite-soft);--tx:var(--silver-light);--tx2:var(--silver);--txm:#5e6d80;--bd:rgba(255,255,255,0.07);--bdm:rgba(255,255,255,0.12);--nbg:rgba(24,29,42,0.92);--lc:var(--silver-light)}
+[data-theme="light"]{--bg:#f4f5f7;--bg-s:#fff;--bg-card:#fff;--bg-sub:#eef0f3;--tx:#0a1628;--tx2:#5c6773;--txm:#9ba5b0;--bd:rgba(10,22,40,0.09);--bdm:rgba(10,22,40,0.14);--nbg:rgba(248,249,251,0.92);--lc:#0a1628}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-font-smoothing:antialiased}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--tx);transition:background .3s,color .3s;min-height:100vh}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--bdm);border-radius:4px}
+
+/* ── LOGIN ── */
+.login-screen{position:fixed;inset:0;background:var(--graphite);display:flex;align-items:center;justify-content:center;z-index:999;transition:opacity .5s,visibility .5s}
+.login-screen.hidden{opacity:0;visibility:hidden;pointer-events:none}
+.login-bg{position:absolute;inset:0;background:radial-gradient(ellipse at 70% 30%,rgba(181,146,76,.07),transparent 55%)}
+.login-box{background:var(--graphite-mid);border:1px solid var(--bdm);border-radius:16px;padding:44px 40px;width:100%;max-width:400px;position:relative;z-index:1;box-shadow:0 24px 80px rgba(0,0,0,.45)}
+.login-logo{text-align:center;margin-bottom:32px}
+.login-logo-m{font-family:'Cormorant Garamond',serif;font-weight:500;font-size:20px;letter-spacing:.14em;color:var(--silver-light);text-transform:uppercase;display:block}
+.login-logo-s{font-size:8px;font-weight:300;letter-spacing:.2em;color:var(--gold);text-transform:uppercase;margin-top:3px;display:block}
+.login-admin-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(181,146,76,.1);border:1px solid rgba(181,146,76,.2);border-radius:6px;padding:5px 12px;font-size:10px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);margin-bottom:20px}
+.login-title{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:300;color:var(--silver-light);margin-bottom:6px}
+.login-sub{font-size:12px;font-weight:300;color:var(--txm);margin-bottom:28px;line-height:1.5}
+.flabel{display:block;font-size:9.5px;font-weight:500;letter-spacing:.15em;text-transform:uppercase;color:var(--txm);margin-bottom:6px}
+.finput{width:100%;padding:12px 14px;background:var(--graphite-soft);border:1px solid var(--bd);border-radius:6px;color:var(--tx);font-family:'DM Sans',sans-serif;font-size:13px;outline:none;transition:border-color .2s}
+.finput:focus{border-color:var(--gold)}
+.login-err{font-size:12px;color:#e05555;text-align:center;margin-top:-6px;display:none}
+.btn-login{width:100%;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:#fff;background:var(--gold);border:none;padding:13px;cursor:pointer;border-radius:6px;transition:all .22s;margin-top:4px}
+.btn-login:hover{background:var(--gold-soft)}
+.login-back{display:block;text-align:center;margin-top:14px;font-size:11px;color:var(--txm);text-decoration:none;transition:color .2s}
+.login-back:hover{color:var(--silver)}
+.login-secure{display:flex;align-items:center;justify-content:center;gap:6px;margin-top:22px;padding-top:18px;border-top:1px solid var(--bd);font-size:10px;color:var(--txm)}
+.fa-attempts{font-size:11px;color:var(--txm);text-align:center;margin-top:10px}
+
+/* ── ISLAND NAV ── */
+.iw{position:fixed;top:18px;left:0;right:0;z-index:200;display:flex;justify-content:center;pointer-events:none}
+.inav{pointer-events:all;background:var(--nbg);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid var(--bdm);border-radius:14px;padding:0 18px;height:56px;display:flex;align-items:center;gap:0;box-shadow:0 4px 28px rgba(0,0,0,.2);max-width:980px;width:calc(100% - 40px)}
+.nlogo{display:flex;flex-direction:column;text-decoration:none;line-height:1;margin-right:20px;flex-shrink:0}
+.nlm{font-family:'Cormorant Garamond',serif;font-weight:500;font-size:16px;letter-spacing:.14em;color:var(--lc);text-transform:uppercase}
+.nls{font-size:7.5px;font-weight:300;letter-spacing:.2em;color:var(--gold);text-transform:uppercase;margin-top:2px}
+.nsep{width:1px;height:20px;background:var(--bdm);margin:0 14px;flex-shrink:0}
+.admin-badge{display:flex;align-items:center;gap:6px;background:var(--gold-dim);border:1px solid rgba(181,146,76,.2);border-radius:7px;padding:5px 11px;font-size:10px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--gold);flex:1}
+.nacts{display:flex;align-items:center;gap:7px;flex-shrink:0}
+.bth{background:none;border:1px solid var(--bdm);border-radius:8px;width:31px;height:31px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--txm);transition:all .2s}
+.bth:hover{border-color:var(--gold);color:var(--gold);background:var(--gold-dim)}
+.btn-sair{font-family:'DM Sans',sans-serif;font-size:10.5px;font-weight:400;letter-spacing:.08em;text-transform:uppercase;color:var(--txm);background:none;border:1px solid var(--bd);padding:6px 13px;cursor:pointer;border-radius:8px;transition:all .2s}
+.btn-sair:hover{border-color:var(--bdm);color:var(--tx)}
+
+/* ── LAYOUT ── */
+.layout{display:grid;grid-template-columns:240px 1fr;min-height:100vh;padding-top:88px}
+.sidebar{background:var(--bg-s);border-right:1px solid var(--bd);padding:20px 0;position:sticky;top:88px;height:calc(100vh - 88px);overflow-y:auto}
+.sb-label{font-size:9px;font-weight:500;letter-spacing:.2em;text-transform:uppercase;color:var(--txm);padding:0 20px;margin:16px 0 6px}
+.sb-link{display:flex;align-items:center;gap:9px;padding:9px 20px;font-size:12.5px;font-weight:400;color:var(--tx2);text-decoration:none;transition:all .18s;cursor:pointer;background:none;border:none;width:100%;text-align:left;font-family:'DM Sans',sans-serif;position:relative}
+.sb-link:hover{background:var(--bg-sub);color:var(--tx)}
+.sb-link.active{background:var(--gold-dim);color:var(--gold)}
+.sb-link.active::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;background:var(--gold)}
+.sb-ico{width:18px;height:18px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:14px}
+.sb-badge{margin-left:auto;font-size:9px;font-weight:500;background:var(--gold);color:#fff;padding:1px 7px;border-radius:10px}
+
+/* ── MAIN ── */
+main{padding:32px 36px;overflow-y:auto}
+.page{display:none}.page.active{display:block}
+.page-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:28px;gap:12px;flex-wrap:wrap}
+.page-title{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:300;color:var(--tx);margin-bottom:5px}
+.page-sub{font-size:13px;font-weight:300;color:var(--txm)}
+.ph-left{} .ph-right{display:flex;gap:8px;align-items:center;flex-shrink:0}
+
+/* ── BUTTONS ── */
+.btn-g{font-family:'DM Sans',sans-serif;font-size:11px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:#fff;background:var(--gold);border:none;padding:9px 16px;cursor:pointer;border-radius:7px;transition:all .22s;display:inline-flex;align-items:center;gap:7px}
+.btn-g:hover{background:var(--gold-soft)}
+.btn-o{font-family:'DM Sans',sans-serif;font-size:11px;font-weight:400;letter-spacing:.1em;text-transform:uppercase;color:var(--tx2);background:none;border:1px solid var(--bdm);padding:9px 16px;cursor:pointer;border-radius:7px;transition:all .2s;display:inline-flex;align-items:center;gap:7px}
+.btn-o:hover{border-color:var(--gold);color:var(--gold)}
+.btn-sm{font-family:'DM Sans',sans-serif;font-size:10px;font-weight:500;padding:5px 11px;border-radius:5px;border:none;cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:5px}
+.btn-sm-g{background:var(--gold-dim);color:var(--gold);border:1px solid rgba(181,146,76,.2)}
+.btn-sm-g:hover{background:var(--gold);color:#fff}
+.btn-sm-d{background:var(--danger-bg);color:var(--danger-tx);border:1px solid rgba(176,48,48,.2)}
+.btn-sm-d:hover{background:rgba(176,48,48,.3)}
+.btn-sm-n{background:var(--bg-sub);color:var(--tx2);border:1px solid var(--bd)}
+.btn-sm-n:hover{border-color:var(--bdm);color:var(--tx)}
+
+/* ── CARDS ── */
+.card{background:var(--bg-card);border:1px solid var(--bd);border-radius:10px;padding:22px}
+.card-title{font-size:11px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--txm);margin-bottom:14px}
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:13px;margin-bottom:26px}
+.kpi{background:var(--bg-card);border:1px solid var(--bd);border-radius:10px;padding:18px 20px}
+.kpi-lbl{font-size:9.5px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--txm);margin-bottom:9px}
+.kpi-val{font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:300;color:var(--tx);line-height:1}
+.kpi-sub{font-size:11px;font-weight:300;color:var(--txm);margin-top:4px}
+.kpi-g .kpi-val{color:var(--gold)}
+
+/* ── TABLES ── */
+.tbl{width:100%;border-collapse:collapse}
+.tbl th{font-size:9.5px;font-weight:500;letter-spacing:.13em;text-transform:uppercase;color:var(--txm);padding:10px 14px;text-align:left;border-bottom:1px solid var(--bd);white-space:nowrap}
+.tbl td{padding:12px 14px;border-bottom:1px solid var(--bd);font-size:12.5px;color:var(--tx2);vertical-align:middle}
+.tbl tr:hover td{background:var(--bg-sub)}
+.tbl tr:last-child td{border-bottom:none}
+.tbl-wrap{background:var(--bg-card);border:1px solid var(--bd);border-radius:10px;overflow:hidden}
+
+/* ── BADGES ── */
+.badge{font-size:9.5px;font-weight:500;padding:3px 9px;border-radius:4px}
+.b-active{background:var(--success-bg);color:var(--success-tx);border:1px solid rgba(26,122,74,.2)}
+.b-pend{background:var(--warn-bg);color:var(--warn-tx);border:1px solid rgba(181,146,76,.2)}
+.b-off{background:var(--bg-sub);color:var(--txm);border:1px solid var(--bd)}
+.b-prog1{background:rgba(40,80,180,.12);color:#7090e0;border:1px solid rgba(40,80,180,.2)}
+.b-prog2{background:var(--warn-bg);color:var(--warn-tx);border:1px solid rgba(181,146,76,.2)}
+.b-prog3{background:rgba(30,130,70,.12);color:#50c080;border:1px solid rgba(30,130,70,.2)}
+
+/* ── SEARCH/FILTER TOOLBAR ── */
+.toolbar{display:flex;align-items:center;gap:9px;margin-bottom:16px;flex-wrap:wrap}
+.t-search{flex:1;min-width:180px;padding:9px 13px;background:var(--bg-sub);border:1px solid var(--bd);border-radius:7px;color:var(--tx);font-family:'DM Sans',sans-serif;font-size:13px;outline:none;transition:border-color .2s}
+.t-search:focus{border-color:var(--gold)}
+.t-sel{padding:9px 13px;background:var(--bg-sub);border:1px solid var(--bd);border-radius:7px;color:var(--tx2);font-family:'DM Sans',sans-serif;font-size:12px;outline:none;cursor:pointer;appearance:none}
+
+/* ── CLIENTES ── */
+.client-avatar{width:32px;height:32px;border-radius:50%;background:var(--gold-dim);border:1px solid rgba(181,146,76,.3);display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:13px;font-weight:300;color:var(--gold);flex-shrink:0}
+.client-name{font-size:13px;font-weight:500;color:var(--tx)}
+.client-sub{font-size:11px;font-weight:300;color:var(--txm)}
+
+/* ── DOCUMENTOS ADMIN ── */
+.doc-folders{display:flex;gap:7px;margin-bottom:16px;flex-wrap:wrap}
+.folder-btn{display:flex;align-items:center;gap:6px;padding:7px 13px;background:var(--bg-sub);border:1px solid var(--bd);border-radius:7px;font-size:12px;color:var(--tx2);cursor:pointer;transition:all .2s;font-family:'DM Sans',sans-serif}
+.folder-btn:hover,.folder-btn.active{background:var(--gold-dim);border-color:rgba(181,146,76,.25);color:var(--gold)}
+.doc-ext{font-size:9px;font-weight:600;padding:2px 5px;border-radius:3px;text-transform:uppercase}
+.ext-pdf{background:rgba(180,50,50,.15);color:#e06060}
+.ext-docx{background:rgba(40,80,180,.15);color:#7090e0}
+.ext-xlsx{background:rgba(30,130,70,.15);color:#50c080}
+
+/* ── AGENDA ── */
+.agenda-grid{display:grid;grid-template-columns:1fr 320px;gap:20px}
+.cal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.cal-title{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:300;color:var(--tx)}
+.cal-nav{display:flex;gap:6px}
+.cal-nav button{background:var(--bg-sub);border:1px solid var(--bd);border-radius:7px;width:30px;height:30px;cursor:pointer;color:var(--tx2);display:flex;align-items:center;justify-content:center;font-size:14px;transition:all .2s}
+.cal-nav button:hover{border-color:var(--gold);color:var(--gold)}
+.cal-days-hdr{display:grid;grid-template-columns:repeat(7,1fr);text-align:center;margin-bottom:5px}
+.cal-days-hdr span{font-size:9.5px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--txm);padding:4px 0}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}
+.cal-day{min-height:46px;background:var(--bg-sub);border-radius:6px;padding:6px;cursor:pointer;transition:all .18s;border:1px solid transparent}
+.cal-day:hover{border-color:var(--bdm);background:var(--bg-card)}
+.cal-day.has-ev{border-color:rgba(181,146,76,.25);background:var(--gold-dim)}
+.cal-day.today{border-color:var(--gold)}
+.cal-day.om{opacity:.3}
+.cal-day-n{font-size:12px;font-weight:400;color:var(--tx2)}
+.cal-day.today .cal-day-n{color:var(--gold);font-weight:500}
+.cal-dot{width:5px;height:5px;border-radius:50%;background:var(--gold);margin-top:3px}
+.meet-card{background:var(--bg-card);border:1px solid var(--bd);border-radius:9px;padding:15px;margin-bottom:10px;transition:all .2s}
+.meet-card:hover{border-color:var(--bdm)}
+.meet-date{font-size:9.5px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);margin-bottom:5px}
+.meet-title{font-size:13px;font-weight:500;color:var(--tx);margin-bottom:3px}
+.meet-client{font-size:11px;color:var(--txm);margin-bottom:6px}
+.meet-actions{display:flex;gap:6px}
+.cal-badge{font-size:9.5px;padding:2px 8px;border-radius:4px;font-weight:500}
+.cb-gc{background:rgba(30,120,180,.12);color:#5090d0;border:1px solid rgba(30,120,180,.2)}
+
+/* ── NOVO EVENTO MODAL ── */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:500;align-items:center;justify-content:center}
+.modal-overlay.open{display:flex}
+.modal{background:var(--bg-s);border:1px solid var(--bdm);border-radius:14px;padding:32px;width:100%;max-width:480px;box-shadow:0 20px 60px rgba(0,0,0,.3);position:relative}
+.modal-title{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:300;color:var(--tx);margin-bottom:20px}
+.modal-close{position:absolute;top:16px;right:16px;background:none;border:none;cursor:pointer;color:var(--txm);font-size:18px;transition:color .2s}
+.modal-close:hover{color:var(--tx)}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.form-group{display:flex;flex-direction:column;gap:6px;margin-bottom:12px}
+.gcal-option{display:flex;align-items:center;gap:10px;padding:12px 14px;background:var(--bg-sub);border:1px solid var(--bd);border-radius:8px;cursor:pointer;transition:all .2s;margin-top:4px}
+.gcal-option:hover{border-color:rgba(30,120,180,.3)}
+.gcal-option input{accent-color:var(--gold)}
+.gcal-label{font-size:12px;font-weight:400;color:var(--tx2)}
+.gcal-sub{font-size:10px;font-weight:300;color:var(--txm)}
+
+/* ── ACESSOS ── */
+.perm-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin-top:12px}
+.perm-item{display:flex;align-items:center;gap:9px;padding:10px 13px;background:var(--bg-sub);border:1px solid var(--bd);border-radius:7px}
+.perm-ico{font-size:14px}
+.perm-t{font-size:12px;font-weight:400;color:var(--tx2)}
+.toggle-wrap{margin-left:auto}
+.toggle{position:relative;width:36px;height:20px;cursor:pointer}
+.toggle input{opacity:0;width:0;height:0}
+.toggle-slider{position:absolute;inset:0;background:var(--bg-card);border:1px solid var(--bdm);border-radius:20px;transition:.3s}
+.toggle-slider::before{content:'';position:absolute;width:14px;height:14px;left:2px;bottom:2px;background:var(--txm);border-radius:50%;transition:.3s}
+.toggle input:checked+.toggle-slider{background:var(--gold-dim);border-color:rgba(181,146,76,.4)}
+.toggle input:checked+.toggle-slider::before{transform:translateX(16px);background:var(--gold)}
+
+/* ── NOTIFICAÇÕES ── */
+.notif-item{display:flex;align-items:flex-start;gap:12px;padding:14px 0;border-bottom:1px solid var(--bd)}
+.notif-item:last-child{border-bottom:none}
+.notif-ico{width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.nic-doc{background:rgba(181,146,76,.1)}
+.nic-meet{background:rgba(40,80,180,.1)}
+.nic-user{background:rgba(30,130,70,.1)}
+.notif-title{font-size:12.5px;font-weight:500;color:var(--tx);margin-bottom:2px}
+.notif-sub{font-size:11px;font-weight:300;color:var(--txm)}
+.notif-time{font-size:10px;color:var(--txm);margin-left:auto;flex-shrink:0}
+.notif-unread{width:7px;height:7px;border-radius:50%;background:var(--gold);margin-top:5px;flex-shrink:0}
+
+/* ── UPLOAD AREA ── */
+.upload-zone{border:1px dashed var(--bdm);border-radius:10px;padding:32px;text-align:center;cursor:pointer;transition:all .2s;background:var(--bg-sub)}
+.upload-zone:hover,.upload-zone.drag{border-color:var(--gold);background:var(--gold-dim)}
+.upload-ico{font-size:32px;margin-bottom:10px}
+.upload-t{font-size:13px;font-weight:400;color:var(--tx2);margin-bottom:4px}
+.upload-s{font-size:11px;font-weight:300;color:var(--txm)}
+.upload-preview{margin-top:14px;display:flex;flex-direction:column;gap:7px}
+.up-file{display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--bg-card);border:1px solid var(--bd);border-radius:7px}
+.up-file-name{font-size:12px;font-weight:400;color:var(--tx);flex:1}
+.up-file-size{font-size:10px;color:var(--txm)}
+.up-remove{background:none;border:none;color:var(--txm);cursor:pointer;font-size:16px;transition:color .2s}
+.up-remove:hover{color:var(--danger-tx)}
+
+@media(max-width:800px){.layout{grid-template-columns:1fr}.sidebar{display:none}.agenda-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div class="login-screen" id="loginScreen">
+  <div class="login-bg" aria-hidden="true"></div>
+  <div class="login-box">
+    <div class="login-logo">
+      <span class="login-logo-m">C. Carvalho</span>
+      <span class="login-logo-s">Portal Administrativo</span>
+    </div>
+    <div style="text-align:center;margin-bottom:18px">
+      <span class="login-admin-badge">⚙️ Acesso Restrito — Administrador</span>
+    </div>
+    <h2 class="login-title">Acesso exclusivo</h2>
+    <p class="login-sub">Este portal é de uso exclusivo de Cleidson Carvalho. Tentativas não autorizadas são registradas e monitoradas.</p>
+    <form style="display:flex;flex-direction:column;gap:14px" onsubmit="doLogin(event)" novalidate>
+      <div><label class="flabel" for="lu">Usuário administrador</label><input class="finput" type="text" id="lu" placeholder="admin" autocomplete="username"></div>
+      <div><label class="flabel" for="lp">Senha segura</label><input class="finput" type="password" id="lp" placeholder="••••••••" autocomplete="current-password"></div>
+      <p class="login-err" id="lerr">Credenciais inválidas. Acesso negado.</p>
+      <button class="btn-login" type="submit">Acessar Portal Administrativo</button>
+    </form>
+    <p class="fa-attempts" id="attemptsMsg"></p>
+    <a href="index.html" class="login-back">← Voltar ao site institucional</a>
+    <div class="login-secure">
+      <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      Sessão criptografada · Acesso monitorado · LGPD compliant
+    </div>
+  </div>
+</div>
+
+<!-- ISLAND NAV -->
+<div class="iw">
+  <nav class="inav" role="navigation">
+    <a href="index.html" class="nlogo">
+      <span class="nlm">C. Carvalho</span>
+      <span class="nls">Portal Administrativo</span>
+    </a>
+    <div class="nsep" aria-hidden="true"></div>
+    <span class="admin-badge">⚙️ Painel Administrativo — Cleidson Carvalho</span>
+    <div class="nacts">
+      <button class="bth" id="thBtn" aria-label="Alternar tema">
+        <svg id="ico-sun" xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="display:none"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32 1.41 1.41M2 12h2m16 0h2M4.93 19.07l1.41-1.41M18.36 5.64l1.41-1.41"/></svg>
+        <svg id="ico-moon" xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      </button>
+      <button class="btn-sair" onclick="doLogout()">Encerrar Sessão</button>
+    </div>
+  </nav>
+</div>
+
+<!-- LAYOUT -->
+<div class="layout">
+  <aside class="sidebar" role="navigation" aria-label="Menu administrativo">
+    <div>
+      <p class="sb-label">Visão Geral</p>
+      <button class="sb-link active" onclick="showPage('dashboard',this)"><span class="sb-ico">📊</span>Dashboard</button>
+      <button class="sb-link" onclick="showPage('notificacoes',this)"><span class="sb-ico">🔔</span>Notificações<span class="sb-badge">4</span></button>
+    </div>
+    <div>
+      <p class="sb-label">Gestão</p>
+      <button class="sb-link" onclick="showPage('clientes',this)"><span class="sb-ico">👥</span>Clientes &amp; Acessos</button>
+      <button class="sb-link" onclick="showPage('documentos',this)"><span class="sb-ico">📁</span>Documentos</button>
+      <button class="sb-link" onclick="showPage('agenda',this)"><span class="sb-ico">📅</span>Agenda &amp; Reuniões</button>
+    </div>
+    <div>
+      <p class="sb-label">Sistema</p>
+      <button class="sb-link" onclick="showPage('seguranca',this)"><span class="sb-ico">🔒</span>Segurança</button>
+      <button class="sb-link" onclick="showPage('configuracoes',this)"><span class="sb-ico">⚙️</span>Configurações</button>
+    </div>
+  </aside>
+
+  <main>
+
+    <!-- DASHBOARD -->
+    <div class="page active" id="page-dashboard">
+      <div class="page-header">
+        <div class="ph-left"><h1 class="page-title">Dashboard</h1><p class="page-sub">Visão geral da plataforma — atualizado agora</p></div>
+        <div class="ph-right"><button class="btn-o" onclick="showPage('clientes',document.querySelector('[onclick*=clientes]'))">+ Novo Cliente</button></div>
+      </div>
+      <div class="kpi-grid">
+        <div class="kpi kpi-g"><p class="kpi-lbl">Clientes Ativos</p><p class="kpi-val">12</p><p class="kpi-sub">2 novos este mês</p></div>
+        <div class="kpi"><p class="kpi-lbl">Documentos</p><p class="kpi-val">87</p><p class="kpi-sub">14 enviados este mês</p></div>
+        <div class="kpi"><p class="kpi-lbl">Reuniões este mês</p><p class="kpi-val">9</p><p class="kpi-sub">3 pendentes confirmação</p></div>
+        <div class="kpi"><p class="kpi-lbl">Acessos hoje</p><p class="kpi-val">5</p><p class="kpi-sub">3 clientes únicos</p></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1.4fr 1fr;gap:16px;margin-bottom:16px">
+        <div class="card">
+          <p class="card-title">Últimas Atividades</p>
+          <div style="display:flex;flex-direction:column">
+            <div class="notif-item"><div class="notif-ico nic-doc">📄</div><div style="flex:1"><p class="notif-title">Documento enviado para Clínica Exemplo</p><p class="notif-sub">Política de Privacidade LGPD · PDF · 2.1 MB</p></div><span class="notif-time">Hoje 14h</span></div>
+            <div class="notif-item"><div class="notif-ico nic-meet">📅</div><div style="flex:1"><p class="notif-title">Reunião confirmada — Dr. Carlos Mendes</p><p class="notif-sub">18 Jun 2025 · 14h00 · Virtual</p></div><span class="notif-time">Hoje 11h</span></div>
+            <div class="notif-item"><div class="notif-ico nic-user">👤</div><div style="flex:1"><p class="notif-title">Novo acesso — ClinicaVida</p><p class="notif-sub">Login às 09h32 · Documentos visualizados</p></div><span class="notif-time">Hoje 09h</span></div>
+            <div class="notif-item"><div class="notif-ico nic-doc">📄</div><div style="flex:1"><p class="notif-title">Relatório gerado — Dr. Pedro Alvares</p><p class="notif-sub">Auditoria Q2 · Exportado em PDF</p></div><span class="notif-time">Ontem</span></div>
+          </div>
+        </div>
+        <div class="card">
+          <p class="card-title">Próximas Reuniões</p>
+          <div style="display:flex;flex-direction:column;gap:9px">
+            <div style="padding:10px 12px;background:var(--bg-sub);border-radius:7px;border:1px solid rgba(181,146,76,.15)"><p style="font-size:9.5px;font-weight:500;color:var(--gold);letter-spacing:.1em;text-transform:uppercase;margin-bottom:3px">18 Jun · 14h00</p><p style="font-size:12.5px;font-weight:500;color:var(--tx)">Clínica Exemplo</p><p style="font-size:11px;color:var(--txm)">Revisão Trimestral</p></div>
+            <div style="padding:10px 12px;background:var(--bg-sub);border-radius:7px;border:1px solid var(--bd)"><p style="font-size:9.5px;font-weight:500;color:var(--txm);letter-spacing:.1em;text-transform:uppercase;margin-bottom:3px">02 Jul · 10h00</p><p style="font-size:12.5px;font-weight:500;color:var(--tx)">Clínica Exemplo</p><p style="font-size:11px;color:var(--txm)">Implementação de IA</p></div>
+            <div style="padding:10px 12px;background:var(--bg-sub);border-radius:7px;border:1px solid var(--bd)"><p style="font-size:9.5px;font-weight:500;color:var(--txm);letter-spacing:.1em;text-transform:uppercase;margin-bottom:3px">05 Jul · 09h30</p><p style="font-size:12.5px;font-weight:500;color:var(--tx)">ClinicaVida</p><p style="font-size:11px;color:var(--txm)">Estruturação Inicial</p></div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <p class="card-title">Clientes — Visão Rápida</p>
+        <table class="tbl">
+          <thead><tr><th>Cliente</th><th>Programa</th><th>Acesso</th><th>Último Acesso</th><th>Documentos</th><th></th></tr></thead>
+          <tbody>
+            <tr><td><div style="display:flex;align-items:center;gap:9px"><div class="client-avatar">CE</div><div><p class="client-name">Clínica Exemplo</p><p class="client-sub">Dr. João Silva</p></div></div></td><td><span class="badge b-prog2">Gov. Saúde</span></td><td><span class="badge b-active">Ativo</span></td><td>Hoje 09h32</td><td>18</td><td><button class="btn-sm btn-sm-g" onclick="showPage('documentos',document.querySelector('[onclick*=documentos]'))">📁 Docs</button></td></tr>
+            <tr><td><div style="display:flex;align-items:center;gap:9px"><div class="client-avatar">CV</div><div><p class="client-name">ClinicaVida</p><p class="client-sub">Dra. Ana Rocha</p></div></div></td><td><span class="badge b-prog1">Estruturação</span></td><td><span class="badge b-active">Ativo</span></td><td>Hoje 10h15</td><td>6</td><td><button class="btn-sm btn-sm-g" onclick="showPage('documentos',document.querySelector('[onclick*=documentos]'))">📁 Docs</button></td></tr>
+            <tr><td><div style="display:flex;align-items:center;gap:9px"><div class="client-avatar">HB</div><div><p class="client-name">Hospital Brasília</p><p class="client-sub">Administrativo</p></div></div></td><td><span class="badge b-prog3">Maturidade</span></td><td><span class="badge b-active">Ativo</span></td><td>07 Jun</td><td>34</td><td><button class="btn-sm btn-sm-g" onclick="showPage('documentos',document.querySelector('[onclick*=documentos]'))">📁 Docs</button></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- CLIENTES -->
+    <div class="page" id="page-clientes">
+      <div class="page-header">
+        <div class="ph-left"><h1 class="page-title">Clientes &amp; Acessos</h1><p class="page-sub">Gerencie clientes, credenciais e permissões de acesso</p></div>
+        <div class="ph-right"><button class="btn-g" onclick="openModal('modal-new-client')">+ Novo Cliente</button></div>
+      </div>
+      <div class="toolbar">
+        <input class="t-search" type="text" placeholder="Buscar cliente..." oninput="filterTable('clients-tbody',this.value)">
+        <select class="t-sel" onchange="filterByProg(this.value)"><option value="">Todos os programas</option><option value="Estruturação">Estruturação</option><option value="Gov. Saúde">Gov. Saúde</option><option value="Maturidade">Maturidade</option></select>
+      </div>
+      <div class="tbl-wrap">
+        <table class="tbl"><thead><tr><th>Cliente</th><th>Programa</th><th>Status</th><th>Documentos</th><th>Último Acesso</th><th>Ações</th></tr></thead>
+        <tbody id="clients-tbody">
+          <tr><td><div style="display:flex;align-items:center;gap:9px"><div class="client-avatar">CE</div><div><p class="client-name">Clínica Exemplo</p><p class="client-sub">Dr. João Silva · cliente@demo.com</p></div></div></td><td><span class="badge b-prog2">Gov. Saúde</span></td><td><span class="badge b-active">Ativo</span></td><td>18</td><td>Hoje 09h32</td><td><div style="display:flex;gap:5px"><button class="btn-sm btn-sm-g">✏️ Editar</button><button class="btn-sm btn-sm-n" onclick="openModal('modal-perms')">🔒 Acessos</button><button class="btn-sm btn-sm-d" onclick="confirmAction('Revogar acesso de Clínica Exemplo?')">✕</button></div></td></tr>
+          <tr><td><div style="display:flex;align-items:center;gap:9px"><div class="client-avatar">CV</div><div><p class="client-name">ClinicaVida</p><p class="client-sub">Dra. Ana Rocha · ana@clinicavida.com</p></div></div></td><td><span class="badge b-prog1">Estruturação</span></td><td><span class="badge b-active">Ativo</span></td><td>6</td><td>Hoje 10h15</td><td><div style="display:flex;gap:5px"><button class="btn-sm btn-sm-g">✏️ Editar</button><button class="btn-sm btn-sm-n" onclick="openModal('modal-perms')">🔒 Acessos</button><button class="btn-sm btn-sm-d" onclick="confirmAction('Revogar acesso de ClinicaVida?')">✕</button></div></td></tr>
+          <tr><td><div style="display:flex;align-items:center;gap:9px"><div class="client-avatar">HB</div><div><p class="client-name">Hospital Brasília</p><p class="client-sub">Administrativo · admin@hosp.com.br</p></div></div></td><td><span class="badge b-prog3">Maturidade</span></td><td><span class="badge b-active">Ativo</span></td><td>34</td><td>07 Jun</td><td><div style="display:flex;gap:5px"><button class="btn-sm btn-sm-g">✏️ Editar</button><button class="btn-sm btn-sm-n" onclick="openModal('modal-perms')">🔒 Acessos</button><button class="btn-sm btn-sm-d" onclick="confirmAction('Revogar acesso de Hospital Brasília?')">✕</button></div></td></tr>
+          <tr><td><div style="display:flex;align-items:center;gap:9px"><div class="client-avatar">DS</div><div><p class="client-name">Dr. Souza Odonto</p><p class="client-sub">Dr. Marcos Souza · marcos@drsouza.com</p></div></div></td><td><span class="badge b-prog1">Estruturação</span></td><td><span class="badge b-pend">Pendente</span></td><td>2</td><td>—</td><td><div style="display:flex;gap:5px"><button class="btn-sm btn-sm-g">✏️ Editar</button><button class="btn-sm btn-sm-n">📧 Reenviar Acesso</button></div></td></tr>
+        </tbody></table>
+      </div>
+    </div>
+
+    <!-- DOCUMENTOS -->
+    <div class="page" id="page-documentos">
+      <div class="page-header">
+        <div class="ph-left"><h1 class="page-title">Documentos</h1><p class="page-sub">Gestão centralizada de todos os documentos dos clientes</p></div>
+        <div class="ph-right"><button class="btn-g" onclick="openModal('modal-upload')">⬆ Importar Documento</button><button class="btn-o">⬇ Exportar</button></div>
+      </div>
+      <div class="toolbar">
+        <input class="t-search" type="text" placeholder="Buscar documento..." oninput="filterTable('docs-tbody',this.value)">
+        <select class="t-sel" id="docClientFilter" onchange="filterDocs()"><option value="">Todos os clientes</option><option>Clínica Exemplo</option><option>ClinicaVida</option><option>Hospital Brasília</option></select>
+        <select class="t-sel" id="docTypeFilter" onchange="filterDocs()"><option value="">Todos os tipos</option><option>Contrato</option><option>Parecer</option><option>Relatório</option><option>Política</option><option>Treinamento</option></select>
+      </div>
+      <div class="doc-folders">
+        <button class="folder-btn active" onclick="setDocFolder('Todos',this)">📂 Todos os clientes</button>
+        <button class="folder-btn" onclick="setDocFolder('Clínica Exemplo',this)">📁 Clínica Exemplo</button>
+        <button class="folder-btn" onclick="setDocFolder('ClinicaVida',this)">📁 ClinicaVida</button>
+        <button class="folder-btn" onclick="setDocFolder('Hospital Brasília',this)">📁 Hospital Brasília</button>
+      </div>
+      <div class="tbl-wrap">
+        <table class="tbl"><thead><tr><th>Documento</th><th>Cliente</th><th>Pasta</th><th>Tamanho</th><th>Enviado em</th><th>Ações</th></tr></thead>
+        <tbody id="docs-tbody">
+          <tr><td><div style="display:flex;align-items:center;gap:7px">📄 Política de Privacidade LGPD <span class="doc-ext ext-pdf">PDF</span></div></td><td>Clínica Exemplo</td><td>Políticas LGPD</td><td>2.1 MB</td><td>05 Jun 2025</td><td><div style="display:flex;gap:5px"><button class="btn-sm btn-sm-g">⬇ Baixar</button><button class="btn-sm btn-sm-d" onclick="confirmAction('Excluir este documento?')">🗑</button></div></td></tr>
+          <tr><td><div style="display:flex;align-items:center;gap:7px">📄 Relatório de Auditoria Q2 <span class="doc-ext ext-pdf">PDF</span></div></td><td>Clínica Exemplo</td><td>Relatórios</td><td>3.4 MB</td><td>28 Mai 2025</td><td><div style="display:flex;gap:5px"><button class="btn-sm btn-sm-g">⬇ Baixar</button><button class="btn-sm btn-sm-d" onclick="confirmAction('Excluir este documento?')">🗑</button></div></td></tr>
+          <tr><td><div style="display:flex;align-items:center;gap:7px">📝 Contrato de Prestação de Serviços <span class="doc-ext ext-docx">DOCX</span></div></td><td>Hospital Brasília</td><td>Contratos</td><td>890 KB</td><td>15 Mai 2025</td><td><div style="display:flex;gap:5px"><button class="btn-sm btn-sm-g">⬇ Baixar</button><button class="btn-sm btn-sm-d" onclick="confirmAction('Excluir este documento?')">🗑</button></div></td></tr>
+          <tr><td><div style="display:flex;align-items:center;gap:7px">📊 Mapeamento de Processos <span class="doc-ext ext-xlsx">XLSX</span></div></td><td>ClinicaVida</td><td>Relatórios</td><td>1.2 MB</td><td>02 Mai 2025</td><td><div style="display:flex;gap:5px"><button class="btn-sm btn-sm-g">⬇ Baixar</button><button class="btn-sm btn-sm-d" onclick="confirmAction('Excluir este documento?')">🗑</button></div></td></tr>
+          <tr><td><div style="display:flex;align-items:center;gap:7px">📄 Parecer sobre Inteligência Artificial <span class="doc-ext ext-pdf">PDF</span></div></td><td>Hospital Brasília</td><td>Pareceres</td><td>1.8 MB</td><td>20 Abr 2025</td><td><div style="display:flex;gap:5px"><button class="btn-sm btn-sm-g">⬇ Baixar</button><button class="btn-sm btn-sm-d" onclick="confirmAction('Excluir este documento?')">🗑</button></div></td></tr>
+        </tbody></table>
+      </div>
+    </div>
+
+    <!-- AGENDA -->
+    <div class="page" id="page-agenda">
+      <div class="page-header">
+        <div class="ph-left"><h1 class="page-title">Agenda &amp; Reuniões</h1><p class="page-sub">Gerencie todos os compromissos e sincronize com Google Calendar</p></div>
+        <div class="ph-right">
+          <button class="btn-o" id="gcalBtn" onclick="toggleGCal()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            Conectar Google Calendar
+          </button>
+          <button class="btn-g" onclick="openModal('modal-new-event')">+ Nova Reunião</button>
+        </div>
+      </div>
+      <div id="gcal-connected" style="display:none;background:rgba(30,120,180,.08);border:1px solid rgba(30,120,180,.2);border-radius:9px;padding:13px 16px;margin-bottom:18px;display:none;align-items:center;gap:12px">
+        <span style="font-size:18px">📅</span>
+        <div style="flex:1"><p style="font-size:12px;font-weight:500;color:#5090d0">Google Calendar conectado</p><p style="font-size:11px;font-weight:300;color:var(--txm)">Reuniões criadas aqui serão sincronizadas automaticamente com cleidson@ccarvalho.adv.br</p></div>
+        <button class="btn-sm btn-sm-d" onclick="disconnectGCal()">Desconectar</button>
+      </div>
+      <div class="agenda-grid">
+        <div>
+          <div class="cal-header"><p class="cal-title" id="calTitle">Junho 2025</p><div class="cal-nav"><button onclick="chMonth(-1)">‹</button><button onclick="chMonth(1)">›</button></div></div>
+          <div class="cal-days-hdr"><span>D</span><span>S</span><span>T</span><span>Q</span><span>Q</span><span>S</span><span>S</span></div>
+          <div class="cal-grid" id="calGrid"></div>
+        </div>
+        <div>
+          <p class="card-title" style="margin-bottom:13px">Reuniões Agendadas</p>
+          <div class="meet-card">
+            <p class="meet-date">18 Jun 2025 · 14h00</p>
+            <p class="meet-title">Revisão Trimestral de Governança</p>
+            <p class="meet-client">👤 Clínica Exemplo · Virtual (Google Meet)</p>
+            <div class="meet-actions">
+              <button class="btn-sm btn-sm-g">✏️ Editar</button>
+              <span class="cal-badge cb-gc">📅 Google Calendar</span>
+              <button class="btn-sm btn-sm-d" onclick="confirmAction('Cancelar reunião?')">✕</button>
+            </div>
+          </div>
+          <div class="meet-card">
+            <p class="meet-date">02 Jul 2025 · 10h00</p>
+            <p class="meet-title">Implementação de Protocolo de IA</p>
+            <p class="meet-client">👤 Clínica Exemplo · Presencial</p>
+            <div class="meet-actions"><button class="btn-sm btn-sm-g">✏️ Editar</button><button class="btn-sm btn-sm-d" onclick="confirmAction('Cancelar reunião?')">✕</button></div>
+          </div>
+          <div class="meet-card">
+            <p class="meet-date">05 Jul 2025 · 09h30</p>
+            <p class="meet-title">Estruturação Inicial</p>
+            <p class="meet-client">👤 ClinicaVida · Virtual (Google Meet)</p>
+            <div class="meet-actions"><button class="btn-sm btn-sm-g">✏️ Editar</button><span class="cal-badge cb-gc">📅 Google Calendar</span><button class="btn-sm btn-sm-d" onclick="confirmAction('Cancelar reunião?')">✕</button></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SEGURANÇA -->
+    <div class="page" id="page-seguranca">
+      <div class="page-header"><div class="ph-left"><h1 class="page-title">Segurança</h1><p class="page-sub">Controle de acesso, logs e proteção da plataforma</p></div></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
+        <div class="card">
+          <p class="card-title">Status do Sistema</p>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--bd)"><span style="font-size:13px;color:var(--tx2)">Criptografia SSL/TLS</span><span class="badge b-active">✓ Ativo</span></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--bd)"><span style="font-size:13px;color:var(--tx2)">Proteção LGPD</span><span class="badge b-active">✓ Ativo</span></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--bd)"><span style="font-size:13px;color:var(--tx2)">Backup automático</span><span class="badge b-active">✓ Ativo</span></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--bd)"><span style="font-size:13px;color:var(--tx2)">Anti-indexação de docs</span><span class="badge b-active">✓ Ativo</span></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0"><span style="font-size:13px;color:var(--tx2)">Controle de sessão</span><span class="badge b-active">✓ Ativo</span></div>
+          </div>
+        </div>
+        <div class="card">
+          <p class="card-title">Controle de Acesso por Módulo</p>
+          <p style="font-size:12px;font-weight:300;color:var(--txm);margin-bottom:14px">Permissões padrão para novos clientes</p>
+          <div class="perm-grid" style="grid-template-columns:1fr">
+            <div class="perm-item"><span class="perm-ico">📄</span><p class="perm-t">Visualizar documentos</p><div class="toggle-wrap"><label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label></div></div>
+            <div class="perm-item"><span class="perm-ico">⬇</span><p class="perm-t">Baixar documentos</p><div class="toggle-wrap"><label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label></div></div>
+            <div class="perm-item"><span class="perm-ico">📅</span><p class="perm-t">Ver agenda e reuniões</p><div class="toggle-wrap"><label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label></div></div>
+            <div class="perm-item"><span class="perm-ico">💬</span><p class="perm-t">Enviar mensagens</p><div class="toggle-wrap"><label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label></div></div>
+            <div class="perm-item"><span class="perm-ico">⬆</span><p class="perm-t">Enviar arquivos</p><div class="toggle-wrap"><label class="toggle"><input type="checkbox"><span class="toggle-slider"></span></label></div></div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <p class="card-title">Log de Acessos Recentes</p>
+        <table class="tbl">
+          <thead><tr><th>Usuário</th><th>IP</th><th>Ação</th><th>Data/Hora</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td>cliente@demo.com</td><td>189.XX.XX.12</td><td>Login</td><td>Hoje 09h32</td><td><span class="badge b-active">Autorizado</span></td></tr>
+            <tr><td>ana@clinicavida.com</td><td>200.XX.XX.88</td><td>Download · Política LGPD</td><td>Hoje 10h15</td><td><span class="badge b-active">Autorizado</span></td></tr>
+            <tr><td>admin@hosp.com.br</td><td>177.XX.XX.44</td><td>Login</td><td>07 Jun 11h00</td><td><span class="badge b-active">Autorizado</span></td></tr>
+            <tr><td>desconhecido</td><td>91.XX.XX.33</td><td>Tentativa de login — Admin</td><td>06 Jun 03h17</td><td><span class="badge b-off">Bloqueado</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- NOTIFICAÇÕES -->
+    <div class="page" id="page-notificacoes">
+      <div class="page-header"><div class="ph-left"><h1 class="page-title">Notificações</h1><p class="page-sub">Atividades recentes da plataforma</p></div><div class="ph-right"><button class="btn-o">Marcar todas como lidas</button></div></div>
+      <div class="card">
+        <div class="notif-item"><div class="notif-unread"></div><div class="notif-ico nic-doc">📄</div><div style="flex:1"><p class="notif-title">Documento enviado com sucesso</p><p class="notif-sub">Política de Privacidade LGPD enviada para Clínica Exemplo</p></div><span class="notif-time">Hoje 14h22</span></div>
+        <div class="notif-item"><div class="notif-unread"></div><div class="notif-ico nic-meet">📅</div><div style="flex:1"><p class="notif-title">Reunião confirmada pelo cliente</p><p class="notif-sub">Clínica Exemplo confirmou reunião do dia 18/06 às 14h00</p></div><span class="notif-time">Hoje 11h05</span></div>
+        <div class="notif-item"><div class="notif-unread"></div><div class="notif-ico nic-user">👤</div><div style="flex:1"><p class="notif-title">Nova solicitação de reunião</p><p class="notif-sub">ClinicaVida solicitou reunião de estruturação para julho</p></div><span class="notif-time">Hoje 09h48</span></div>
+        <div class="notif-item"><div class="notif-unread"></div><div class="notif-ico nic-doc" style="background:rgba(176,48,48,.1)">⚠️</div><div style="flex:1"><p class="notif-title">Tentativa de acesso não autorizado bloqueada</p><p class="notif-sub">IP 91.XX.XX.33 tentou acessar o portal admin · 06/06 03h17</p></div><span class="notif-time">06 Jun</span></div>
+        <div class="notif-item"><div class="notif-ico nic-doc">📄</div><div style="flex:1"><p class="notif-title">Backup automático concluído</p><p class="notif-sub">87 documentos · 245 MB · Armazenado em nuvem segura</p></div><span class="notif-time">06 Jun</span></div>
+      </div>
+    </div>
+
+    <!-- CONFIGURAÇÕES -->
+    <div class="page" id="page-configuracoes">
+      <div class="page-header"><div class="ph-left"><h1 class="page-title">Configurações</h1><p class="page-sub">Preferências gerais do portal administrativo</p></div></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+        <div class="card">
+          <p class="card-title">Perfil do Administrador</p>
+          <div style="display:flex;flex-direction:column;gap:13px">
+            <div><label class="flabel">Nome completo</label><input class="finput" type="text" value="Cleidson Carvalho"></div>
+            <div><label class="flabel">E-mail</label><input class="finput" type="email" value="cleidson@ccarvalho.adv.br"></div>
+            <div><label class="flabel">OAB</label><input class="finput" type="text" value="OAB/DF 000.000"></div>
+            <button class="btn-g" style="align-self:flex-start">Salvar Alterações</button>
+          </div>
+        </div>
+        <div class="card">
+          <p class="card-title">Integrações</p>
+          <div style="display:flex;flex-direction:column;gap:11px">
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:var(--bg-sub);border:1px solid var(--bd);border-radius:8px"><div style="display:flex;align-items:center;gap:9px"><span style="font-size:16px">📅</span><div><p style="font-size:12px;font-weight:500;color:var(--tx)">Google Calendar</p><p style="font-size:10px;color:var(--txm)">Sincronizar reuniões</p></div></div><button class="btn-sm btn-sm-g" onclick="toggleGCal();showPage('agenda',document.querySelector('[onclick*=agenda]'))">Conectar</button></div>
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:var(--bg-sub);border:1px solid var(--bd);border-radius:8px"><div style="display:flex;align-items:center;gap:9px"><span style="font-size:16px">☁️</span><div><p style="font-size:12px;font-weight:500;color:var(--tx)">Cloud Storage</p><p style="font-size:10px;color:var(--txm)">Amazon S3 / Google Cloud</p></div></div><span class="badge b-active">Ativo</span></div>
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:var(--bg-sub);border:1px solid var(--bd);border-radius:8px"><div style="display:flex;align-items:center;gap:9px"><span style="font-size:16px">📧</span><div><p style="font-size:12px;font-weight:500;color:var(--tx)">E-mail / WhatsApp</p><p style="font-size:10px;color:var(--txm)">Notificações automáticas</p></div></div><span class="badge b-active">Ativo</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- MODALS -->
+<!-- Upload -->
+<div class="modal-overlay" id="modal-upload">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('modal-upload')">✕</button>
+    <h2 class="modal-title">Importar Documento</h2>
+    <div style="display:flex;flex-direction:column;gap:12px;margin-bottom:14px">
+      <div><label class="flabel">Cliente destinatário</label><select class="finput" style="appearance:none;cursor:pointer"><option>Selecionar cliente...</option><option>Clínica Exemplo</option><option>ClinicaVida</option><option>Hospital Brasília</option></select></div>
+      <div class="form-row">
+        <div><label class="flabel">Pasta / Categoria</label><select class="finput" style="appearance:none;cursor:pointer"><option>Contratos</option><option>Pareceres</option><option>Relatórios</option><option>Políticas LGPD</option><option>Treinamentos</option></select></div>
+        <div><label class="flabel">Tipo de documento</label><select class="finput" style="appearance:none;cursor:pointer"><option>Contrato</option><option>Parecer</option><option>Relatório</option><option>Política</option></select></div>
+      </div>
+    </div>
+    <div class="upload-zone" id="uploadZone" onclick="document.getElementById('fileInput').click()" ondragover="event.preventDefault();this.classList.add('drag')" ondragleave="this.classList.remove('drag')" ondrop="handleDrop(event)">
+      <div class="upload-ico">📄</div>
+      <p class="upload-t">Clique ou arraste o arquivo aqui</p>
+      <p class="upload-s">PDF, DOCX, XLSX — até 50 MB</p>
+    </div>
+    <input type="file" id="fileInput" style="display:none" multiple accept=".pdf,.docx,.xlsx" onchange="showFiles(this.files)">
+    <div class="upload-preview" id="uploadPreview"></div>
+    <div style="display:flex;justify-content:flex-end;gap:9px;margin-top:18px">
+      <button class="btn-o" onclick="closeModal('modal-upload')">Cancelar</button>
+      <button class="btn-g" onclick="fakeUpload()">⬆ Importar</button>
+    </div>
+  </div>
+</div>
+
+<!-- New Client -->
+<div class="modal-overlay" id="modal-new-client">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('modal-new-client')">✕</button>
+    <h2 class="modal-title">Novo Cliente</h2>
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div class="form-row"><div><label class="flabel">Nome / Clínica</label><input class="finput" type="text" placeholder="Ex: Clínica Vida"></div><div><label class="flabel">Responsável</label><input class="finput" type="text" placeholder="Dr. João Silva"></div></div>
+      <div class="form-row"><div><label class="flabel">E-mail de acesso</label><input class="finput" type="email" placeholder="joao@clinica.com"></div><div><label class="flabel">WhatsApp</label><input class="finput" type="tel" placeholder="(61) 9 0000-0000"></div></div>
+      <div><label class="flabel">Programa</label><select class="finput" style="appearance:none;cursor:pointer"><option>Programa de Estruturação</option><option>Programa de Governança em Saúde</option><option>Programa de Maturidade Regulatória</option></select></div>
+      <div style="padding:12px 14px;background:var(--bg-sub);border:1px solid var(--bd);border-radius:8px">
+        <p style="font-size:11px;font-weight:500;color:var(--txm);margin-bottom:8px;letter-spacing:.1em;text-transform:uppercase">Envio de credenciais</p>
+        <label style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--tx2);cursor:pointer"><input type="checkbox" checked style="accent-color:var(--gold)"> Enviar e-mail com link de primeiro acesso</label>
+        <label style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--tx2);cursor:pointer;margin-top:7px"><input type="checkbox" checked style="accent-color:var(--gold)"> Notificar via WhatsApp</label>
+      </div>
+    </div>
+    <div style="display:flex;justify-content:flex-end;gap:9px;margin-top:20px">
+      <button class="btn-o" onclick="closeModal('modal-new-client')">Cancelar</button>
+      <button class="btn-g" onclick="closeModal('modal-new-client');alert('✓ Cliente criado e credenciais enviadas!')">Criar Cliente</button>
+    </div>
+  </div>
+</div>
+
+<!-- Permissions -->
+<div class="modal-overlay" id="modal-perms">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('modal-perms')">✕</button>
+    <h2 class="modal-title">Permissões de Acesso</h2>
+    <p style="font-size:12px;font-weight:300;color:var(--txm);margin-bottom:18px">Clínica Exemplo — Dr. João Silva</p>
+    <div style="display:flex;flex-direction:column;gap:9px">
+      <div class="perm-item"><span class="perm-ico">📄</span><div><p class="perm-t">Visualizar documentos</p><p style="font-size:10px;color:var(--txm)">Acesso de leitura a todos os docs</p></div><div class="toggle-wrap"><label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label></div></div>
+      <div class="perm-item"><span class="perm-ico">⬇</span><div><p class="perm-t">Baixar documentos</p><p style="font-size:10px;color:var(--txm)">Download de arquivos</p></div><div class="toggle-wrap"><label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label></div></div>
+      <div class="perm-item"><span class="perm-ico">📅</span><div><p class="perm-t">Ver agenda</p><p style="font-size:10px;color:var(--txm)">Visualizar reuniões agendadas</p></div><div class="toggle-wrap"><label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label></div></div>
+      <div class="perm-item"><span class="perm-ico">💬</span><div><p class="perm-t">Mensagens</p><p style="font-size:10px;color:var(--txm)">Comunicação com o escritório</p></div><div class="toggle-wrap"><label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label></div></div>
+      <div class="perm-item"><span class="perm-ico">⬆</span><div><p class="perm-t">Enviar arquivos</p><p style="font-size:10px;color:var(--txm)">Upload de documentos próprios</p></div><div class="toggle-wrap"><label class="toggle"><input type="checkbox"><span class="toggle-slider"></span></label></div></div>
+    </div>
+    <div style="display:flex;justify-content:flex-end;gap:9px;margin-top:20px">
+      <button class="btn-o" onclick="closeModal('modal-perms')">Cancelar</button>
+      <button class="btn-g" onclick="closeModal('modal-perms');alert('✓ Permissões salvas com sucesso!')">Salvar Permissões</button>
+    </div>
+  </div>
+</div>
+
+<!-- New Event -->
+<div class="modal-overlay" id="modal-new-event">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('modal-new-event')">✕</button>
+    <h2 class="modal-title">Nova Reunião</h2>
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div><label class="flabel">Título da reunião</label><input class="finput" type="text" placeholder="Ex: Revisão Trimestral de Governança"></div>
+      <div><label class="flabel">Cliente</label><select class="finput" style="appearance:none;cursor:pointer"><option>Selecionar cliente...</option><option>Clínica Exemplo</option><option>ClinicaVida</option><option>Hospital Brasília</option></select></div>
+      <div class="form-row"><div><label class="flabel">Data</label><input class="finput" type="date"></div><div><label class="flabel">Horário</label><input class="finput" type="time" value="10:00"></div></div>
+      <div><label class="flabel">Tipo</label><select class="finput" style="appearance:none;cursor:pointer"><option>Virtual — Google Meet</option><option>Presencial — Escritório</option><option>Presencial — Clínica</option></select></div>
+      <div><label class="flabel">Observações</label><textarea class="finput" rows="3" placeholder="Pauta e observações da reunião..."></textarea></div>
+      <div style="background:var(--bg-sub);border:1px solid var(--bd);border-radius:9px;padding:14px">
+        <p style="font-size:10px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--txm);margin-bottom:10px">Sincronizar com calendários</p>
+        <div class="gcal-option"><input type="checkbox" id="gc-sync" checked><div><p class="gcal-label">Google Calendar</p><p class="gcal-sub">Adiciona ao Google Calendar automaticamente e envia convite ao cliente</p></div></div>
+        <div class="gcal-option" style="margin-top:8px"><input type="checkbox" id="cal-sync"><div><p class="gcal-label">Calendário nativo (.ics)</p><p class="gcal-sub">Gera arquivo .ics compatível com Outlook, Apple Calendar e outros</p></div></div>
+      </div>
+    </div>
+    <div style="display:flex;justify-content:flex-end;gap:9px;margin-top:20px">
+      <button class="btn-o" onclick="closeModal('modal-new-event')">Cancelar</button>
+      <button class="btn-g" onclick="saveEvent()">Criar Reunião</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// Theme
+const H=document.documentElement;
+const sv=localStorage.getItem('cc-theme')||'dark';H.setAttribute('data-theme',sv);
+const sun=document.getElementById('ico-sun'),moon=document.getElementById('ico-moon');
+function updIco(t){sun.style.display=t==='light'?'block':'none';moon.style.display=t==='dark'?'block':'none'}updIco(sv);
+document.getElementById('thBtn').addEventListener('click',()=>{
+  const t=H.getAttribute('data-theme')==='light'?'dark':'light';
+  H.setAttribute('data-theme',t);localStorage.setItem('cc-theme',t);updIco(t);
+});
+
+// Login — admin / cc@admin2025
+let attempts=0;
+function doLogin(e){
+  e.preventDefault();
+  const u=document.getElementById('lu').value.trim(),p=document.getElementById('lp').value,err=document.getElementById('lerr'),am=document.getElementById('attemptsMsg');
+  err.style.display='none';
+  if((u==='admin'||u==='cleidson') && (p==='cc@admin2025'||p==='admin')){
+    document.getElementById('loginScreen').classList.add('hidden');attempts=0;
+  } else {
+    attempts++;
+    err.style.display='block';
+    document.getElementById('lp').value='';
+    if(attempts>=3) am.textContent='⚠️ '+attempts+' tentativas registradas. Acesso monitorado.';
+    if(attempts>=5){document.querySelector('.btn-login').disabled=true;document.querySelector('.btn-login').textContent='Bloqueado por 5 min';setTimeout(()=>{document.querySelector('.btn-login').disabled=false;document.querySelector('.btn-login').textContent='Acessar Portal Administrativo';attempts=0;am.textContent=''},300000)}
+  }
+}
+function doLogout(){document.getElementById('loginScreen').classList.remove('hidden');document.getElementById('lu').value='';document.getElementById('lp').value=''}
+
+// Pages
+function showPage(id,btn){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.sb-link').forEach(b=>b.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  if(btn) btn.classList.add('active');
+  else document.querySelector('[onclick*="\''+id+'\'"]')?.classList.add('active');
+}
+
+// Calendar
+let calDate=new Date(2025,5,1);
+function renderCal(){
+  const y=calDate.getFullYear(),m=calDate.getMonth();
+  document.getElementById('calTitle').textContent=new Date(y,m,1).toLocaleDateString('pt-BR',{month:'long',year:'numeric'});
+  const g=document.getElementById('calGrid');g.innerHTML='';
+  const first=new Date(y,m,1).getDay(),days=new Date(y,m+1,0).getDate();
+  const evts=[18];const today=new Date();
+  for(let i=0;i<first;i++){const d=document.createElement('div');d.className='cal-day om';g.appendChild(d)}
+  for(let d=1;d<=days;d++){
+    const el=document.createElement('div');
+    let cls='cal-day';
+    if(evts.includes(d)) cls+=' has-ev';
+    if(y===today.getFullYear()&&m===today.getMonth()&&d===today.getDate()) cls+=' today';
+    el.className=cls;
+    el.innerHTML='<div class="cal-day-n">'+d+'</div>'+(evts.includes(d)?'<div class="cal-dot"></div>':'');
+    g.appendChild(el);
+  }
+}
+function chMonth(n){calDate.setMonth(calDate.getMonth()+n);renderCal()}
+renderCal();
+
+// Modals
+function openModal(id){document.getElementById(id).classList.add('open')}
+function closeModal(id){document.getElementById(id).classList.remove('open')}
+document.querySelectorAll('.modal-overlay').forEach(m=>{m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('open')})});
+
+// GCal
+let gcalOn=false;
+function toggleGCal(){
+  gcalOn=!gcalOn;
+  const btn=document.getElementById('gcalBtn'),conn=document.getElementById('gcal-connected');
+  if(gcalOn){btn.textContent='✓ Google Calendar Conectado';btn.style.color='var(--gold)';conn.style.display='flex'}
+  else{btn.innerHTML='<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> Conectar Google Calendar';btn.style.color='';conn.style.display='none'}
+}
+function disconnectGCal(){gcalOn=false;toggleGCal()}
+
+// File upload
+function showFiles(files){
+  const prev=document.getElementById('uploadPreview');prev.innerHTML='';
+  Array.from(files).forEach(f=>{
+    prev.innerHTML+=`<div class="up-file"><span style="font-size:14px">${f.name.endsWith('.pdf')?'📄':f.name.endsWith('.xlsx')?'📊':'📝'}</span><span class="up-file-name">${f.name}</span><span class="up-file-size">${(f.size/1024).toFixed(0)} KB</span><button class="up-remove" onclick="this.parentElement.remove()">✕</button></div>`;
+  });
+}
+function handleDrop(e){e.preventDefault();document.getElementById('uploadZone').classList.remove('drag');showFiles(e.dataTransfer.files)}
+function fakeUpload(){closeModal('modal-upload');alert('✓ Documento importado e disponível para o cliente!')}
+
+// Confirm
+function confirmAction(msg){if(confirm(msg)){alert('✓ Ação concluída.')}}
+
+// Save event
+function saveEvent(){
+  const gc=document.getElementById('gc-sync').checked,ics=document.getElementById('cal-sync').checked;
+  closeModal('modal-new-event');
+  let msg='✓ Reunião criada com sucesso!';
+  if(gc) msg+='\n📅 Adicionada ao Google Calendar e convite enviado ao cliente.';
+  if(ics) msg+='\n📎 Arquivo .ics gerado para download.';
+  alert(msg);
+}
+
+// Table filters
+function filterTable(tbodyId,q){document.querySelectorAll('#'+tbodyId+' tr').forEach(r=>{r.style.display=r.textContent.toLowerCase().includes(q.toLowerCase())?'':'none'})}
+function filterByProg(v){document.querySelectorAll('#clients-tbody tr').forEach(r=>{r.style.display=(!v||r.textContent.includes(v))?'':'none'})}
+function setDocFolder(name,btn){document.querySelectorAll('.doc-folders .folder-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');document.querySelectorAll('#docs-tbody tr').forEach(r=>{r.style.display=(name==='Todos'||r.cells[1].textContent===name)?'':'none'})}
+function filterDocs(){const c=document.getElementById('docClientFilter').value,t=document.getElementById('docTypeFilter').value;document.querySelectorAll('#docs-tbody tr').forEach(r=>{const mc=!c||r.cells[1].textContent.includes(c),mt=!t||r.cells[2].textContent.includes(t);r.style.display=(mc&&mt)?'':'none'})}
+</script>
+</body>
+</html>
